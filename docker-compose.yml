@@ -1,0 +1,44 @@
+version: '2'
+services:
+  web:
+    build: ./src/Web/bin/Release
+    environment:
+      - "RedisConnectionString=redis:6379"
+      - "HangfireRedisDb=1"
+      - "HangfireRedisPrefix=hangfire:"
+      - "HangfireDashboardUrl=/hangfire"
+      - "HangfireWorkerCount=3"
+      - "HangfireQueues=default"
+      - "RedisKeyUserList=UserList1"
+      - "AuthRedisDb=1"
+      - "RedisConnectionMaxRetryCount=2"
+    ports:
+      - 8080
+    networks:
+      - front-tier
+      - back-tier
+
+  redis:
+    image: redis
+    links:
+      - web
+    networks:
+      - back-tier
+
+  lb:
+    image: dockercloud/haproxy
+    ports:
+      - 80:80
+    links:
+      - web
+    networks:
+      - front-tier
+      - back-tier
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
+
+networks:
+  front-tier:
+    driver: bridge
+  back-tier:
+    driver: bridge
