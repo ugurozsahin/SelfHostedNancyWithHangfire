@@ -1,5 +1,5 @@
-﻿
-using Implementation.Abstracts.Configuration;
+﻿using Implementation.Abstracts.Configuration;
+using System;
 using System.Configuration;
 using System.Linq;
 
@@ -53,7 +53,7 @@ namespace Implementation.Concretes.Configuration
 
         private static string GetAppSettingValue(string key, string defaultValue = null)
         {
-            return ConfigurationManager.AppSettings[key] ?? defaultValue;
+            return Environment.GetEnvironmentVariable(key) ?? ConfigurationManager.AppSettings[key] ?? defaultValue;
         }
     }
 }
